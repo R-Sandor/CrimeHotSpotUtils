@@ -1,0 +1,51 @@
+Abduction
+Animal Bite
+Assault
+Assault, Aggravated
+Assist Other Agency
+Auto Theft
+Burglary, Residence
+Credit Card Fraud
+Criminal Mischief
+Curfew Violation
+DUI
+Dating Violence
+Destruction of Property
+Disorderly Conduct
+Disturbance
+Evading
+False Report
+Fire Alarm
+Forgery
+Fraud
+Harassment
+Identity Theft
+Intimidation/Threats
+Larceny
+Larceny From Auto
+Larceny, Electronics
+Liquor Law, Public Intoxication
+Liquor Law, Underage
+Medical Assist
+Minor in Possession - Alcohol
+Motor Vehicle Crash, Hit and Run
+Motor Vehicle Crash, Property Damage
+Narcotics Violation
+Narcotics Violation, Distribution/Sale
+Narcotics Violation, Marijuana
+Obstructing
+Odor Of Marijuana
+Poss of Controlled Substance
+Poss of Marijuana
+Protective Order
+Public Indecency
+Public Intoxication
+Reckless Endangerment
+Resisting Arrest
+Robbery
+Sexual Assault
+Suspicious Person
+Suspicious Vehicle
+Traffic Arrest
+Trespassing
+Uniform Notice of Violation

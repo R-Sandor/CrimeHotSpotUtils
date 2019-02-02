@@ -94,7 +94,6 @@ with open('crimes.json', 'w') as outfile:
             offenses_to_parse = row[1]
             check_offense = ''
             pos = offenses_to_parse.find('|')
-            first_time = True
             
             #List of tuples
             #Will be used to store the crime with its category, this will be a sorted listed.
@@ -103,52 +102,59 @@ with open('crimes.json', 'w') as outfile:
             #This is used to speed up the sort up of the list.
             last_sort_cat = 0
             last_sort_location = 0
-                while pos != -1:
-                    check_offense = offenses_to_parse[:pos-1]
-                    offenses_to_parse = offenses_to_parse[pos+2:]
-                    first_time = False
-                    while (x<5):
-                        if check_offense in crime_cat_list[x]:
+            while pos != -1:
+                check_offense = offenses_to_parse[:pos-1]
+                offenses_to_parse = offenses_to_parse[pos+2:]
+                first_time = False
+                x = 0
+                while (x<5):
+                    if check_offense in crime_cat_list[x]:
                         #Will store the crime category and the crime category in a list together
                         #in a tuple then store that tuple in a list
                         offense_tuple = (x, check_offense)
-                            if x >= max_category:
-                                tuple_list = [offense_tuple] + tuple_list
-                                max_category = x
-                                last_sort_cat = x
-                                last_sort_location = 0
-                            elif x == last_sort_cat:
-                                tuple_list.insert(last_sort_location, offense_tuple)
-                            else:
-                                y = 1
-                                # z returns the crime category of the second element in the tuple list
-                                z = tuple_list[y][0] 
-                                while (x < z) and (y < len(tuple_list)) :
-                                    y=+1
-                                    if y = len(tuple_list):
-                                        tuple_list.append(offense_tuple)
-                                        last_sort_cat = offense_tuple[0]
-                                        last_sort_location = y
-                                        break
-                                     
-                                last_sort_cat = offense_tuple[0]
-                                last_sort_location = y
-                                tuple_list.insert(y, offense_tuple)
-                                break
+                        if x >= max_category:
+                            tuple_list = [offense_tuple] + tuple_list
+                            max_category = x
+                            last_sort_cat = x
+                            last_sort_location = 0
+                        elif x == last_sort_cat:
+                            tuple_list.insert(last_sort_location, offense_tuple)
                         else:
-                            x=+1
-                        pos = offenses_to_parse.find('|') 
-                        crime_cat = max_category
-
+                            y = 1
+                            # z returns the crime category of the second element in the tuple list
+                            z = tuple_list[y][0] 
+                            while (x < z) and (y < len(tuple_list)) :
+                                y=+1
+                                if y == len(tuple_list):
+                                    tuple_list.append(offense_tuple)
+                                    last_sort_cat = offense_tuple[0]
+                                    last_sort_location = y
+                                    break
+                            last_sort_cat = offense_tuple[0]
+                            last_sort_location = y
+                            tuple_list.insert(y, offense_tuple)
+                            break
+                    else:
+                        x=+1
+                    pos = offenses_to_parse.find('|') 
+                    crime_cat = max_category
+            #-- Done with looping ------------------------------------------------------------------------------------------------        
             occurrence_time_date_to_parse = row[3]
             occurrence_time_date_to_parse = occurrence_time_date_to_parse.split()
             time = occurrence_time_date_to_parse[1] 
             date = occurrence_time_date_to_parse[0]
+           
+            tuple_count = 0
+            #Create a list of offense from the sorted to tuple_list             
+            while (tuple_count < len(tuple_list)):
+                offenses_lis.append(tuple_list[tuple_count][1])
+                tuple_count=+1 
+                
 
             clean_address = row[5] 
             lat = row[6]
             lng = row[7]
-
+                
             data['_id'] = record_id
             data['crimeCat'] = crime_cat
             data['date'] = date

@@ -177,8 +177,8 @@ with open('crimes.json', 'w') as outfile:
                 tuple_count+=1 
                 
             clean_address = row[5] 
-            lat = row[6]
-            lng = row[7]
+            lat = row[7]
+            lng = row[8]
                 
             data['_id'] = record_id
             data['crimeCat'] = crime_cat

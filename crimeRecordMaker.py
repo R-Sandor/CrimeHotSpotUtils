@@ -84,7 +84,7 @@ cat8 = ["Assault, Aggravated", "Abduction", "Motor Vehicle Crash, Hit and Run"]
 crime_cat_list = [cat0, cat1, cat2,cat4, cat8]
 #--------------------------------------------------------------------------------------------
 
-#The JSON FILE data atributes
+#JSON OBJECT 
 data = {
         '_id':  '',     #The ODU CSV ID - Figured might as well use the this as an ID
         'crimeCat':' ', #Category of the most sever offense 

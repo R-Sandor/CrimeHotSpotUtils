@@ -23,7 +23,28 @@ date=""
 offenses_list=[]
 lat=""
 lng=""
+severity = 0
 #---------------
+
+#The Crime category needs to switched from the index value of crime_cat_list
+#to the actual crime cat value
+def zero():
+    return 0 
+def one():
+    return 1
+def two():
+    return 2
+def three():
+    return 4
+def four():
+    return 8
+options = {0 : zero,
+           1 : one,
+           2 : two,
+           3 : three,
+           4 : four,
+}
+
 #Category 0 list - uncategorized
 cat0 = ["Identity Theft", "Resisting Arrest","Credit Card Fraud", "Fraud", "False Report", "Evading", "Forgery",
 "Obstructing", "Protective Order", "Traffic Arrest", "Uniform Notice of Violation", "Disturbance", "Medical Assist", "Resisting Arrest",
@@ -66,12 +87,14 @@ data = {
         'date':' ',     #Date of the offense(s)
         'time':' ',     #Time of the offense(s)
         'offenses': [], #List of offenses
+        'severity':'',  #Static Sum of significance of the crime committed
         'lat':' ',      #Latitude      
         'lng':' '}      #Longitude
 
 #Open our data CSV
 infile = open('2017Crimemapping.csv', 'r')
 csv_reader = csv.reader(infile, delimiter=',')
+
 #------------------------------------------------
 #This is where the data json objects are created
 #from the csv file
@@ -82,43 +105,75 @@ with open('crimes.json', 'w') as outfile:
     for row in csv_reader:
         if line_count >1:
             print("-------------------------------{Processing Row}-----------------------------------")
+
+            #------------------------------------------------------------------------------------------
             #Manipulate the CSV row
-            #---------------------
+            #-------------------------------------------------------------------------------------------
+
             offenses_list=[]
-            print(row[0])
             record_id = row[0]
             #Crimes can have multiple offenses to evaluate
             #Breaks the offenses in the crime report by the "|" character
             offenses_to_parse = row[1]
             check_offense = ''
+
+            #See if there are more offenses in offenses_to_parse variable
             pos = offenses_to_parse.find('|')
+
             #List of tuples
             #Will be used to store the crime with its category, this will be a sorted listed.
             tuple_list = []
             max_category = 0
+            
             #This is used to speed up the sort up of the list.
             last_sort_cat = 0
             last_sort_location = 0
+            
+            #-------------------------------------
+            # While there are still more offenses 
+            # process them.
+            #-------------------------------------
             while pos != -1:
+
+                #Cut off the white space after a '|'
+                #leaving only one offense
                 check_offense = offenses_to_parse[:pos-1]
+
+                #Cut off the bar and white space leaving the remaining offense(s) 
+                #to be processed
                 offenses_to_parse = offenses_to_parse[pos+2:]
+
                 x = 0
+
+                #There are only 4 crime categories therefore 
+                #must be less than 5
                 while (x<5):
+
+                    #Check if crime is in that category
                     if check_offense in crime_cat_list[x]:
                         #Will store the crime category and the crime category in a list together
                         #in a tuple then store that tuple in a list
                         pos = offenses_to_parse.find('|') 
                         offense_tuple = (x, check_offense)
+
+                        #if it is greater than the most severe crime so far, append to front
+                        #save location and category of that incident to speed up future sorting
                         if x >= max_category:
                             tuple_list.insert(0, offense_tuple)
                             max_category = x
                             last_sort_cat = x
                             last_sort_location = 0
                             x+=1
+
+                        #If its exactly the same category as the last
+                        #insert where the last one was inserted to speed up sorting
                         elif x == last_sort_cat:
 
                             tuple_list.insert(last_sort_location, offense_tuple)
                             x+=1
+
+                        #Manually find where it should be stored based on the contents
+                        #of list of tuples where the first element of the tuple is cat
                         else:
                             y = 0
                             # z returns the crime category of the second element in the tuple list
@@ -130,10 +185,25 @@ with open('crimes.json', 'w') as outfile:
                             tuple_list.insert(y, offense_tuple)
                             x+=1
                         break
+                    #Not found in that category move up a category
                     else:
                         x+=1
+
+                    #-out of while loop
+                    #find what the position of the next pipe is for
+                    #the next search for above
                     pos = offenses_to_parse.find('|') 
+                    #This is used to set the crime category
                     crime_cat = max_category
+            #--------------------------------------------------------------------
+            #This section is used on the last offense a multi-offense crime
+            #it is all so used if there is only 1 offense.
+            #The premise is that find command checks for more offenses in a crime 
+            #report by searching for a pipe(|) and none is found returns -1 
+            #
+            #Logic is similar to above accept only works one record
+            #
+            #---------------------------------------------------------------------
             if pos == -1:
                 x = 0 
                 while (x<5):
@@ -164,7 +234,15 @@ with open('crimes.json', 'w') as outfile:
                             break
                     x+=1
                 crime_cat = max_category    
+
+
             #-- Done with looping ------------------------------------------------------------------------------------------------        
+            #This section deals with taking the cleaned up records puting it in a json record.
+            #   Severity score is calculated
+            #   crime categories are adjusted
+            #Then dumps the record into a file called: crimes.json
+            #---------------------------------------------------------------------------------------------------------------------
+
             occurrence_time_date_to_parse = row[3]
             occurrence_time_date_to_parse = occurrence_time_date_to_parse.split()
             time = occurrence_time_date_to_parse[1][:-3] 
@@ -174,24 +252,42 @@ with open('crimes.json', 'w') as outfile:
             #Create a list of offense from the sorted to tuple_list             
             while (tuple_count < len(tuple_list)):
                 offenses_list.append(tuple_list[tuple_count][1])
-                tuple_count+=1 
                 
-            clean_address = row[5] 
+                #Create the severity
+                if tuple_count == 0:
+                    severity = options[tuple_list[tuple_count][0]]()
+                elif tuple_count == 1: 
+                    severity+= options[tuple_list[tuple_count][0]]()/4
+                
+                tuple_count+=1 
+
+            clean_address = row[6] 
             lat = row[7]
             lng = row[8]
-                
+            
+            #using the id from the csv to better help find if there are
+            #any errors with the data created from this script.
             data['_id'] = record_id
+
+
             data['crimeCat'] = crime_cat
             data['date'] = date
             data['time'] = time
             data['offenses'] = offenses_list
             data['lat'] = lat
             data['lng'] = lng
-
+            data['severity'] = severity
+            
+            number_offenses = len(tuple_list)
+            description = ''+str(number_offenses) + ' offense(s) at '+ clean_address 
+            data['desc'] = description
             print(data)
             json.dump(data, outfile)
             outfile.write('\n')
             line_count+=1
         else:
             line_count+=1
+
+
+#Close file, Done,YEET!!!!
 infile.close

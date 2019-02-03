@@ -7,12 +7,12 @@ import csv
 #CS411W
 #Initial Revision: 1.0
 #-----------------------------------------------------------------------------------------
-#This application will take the 2017 ODU crime data and turn the data in to a .csv for the 
-#Mongo Database. 
+#This application will take the 2017 ODU crime data and turn the data in .csv to json 
+#for the Mongo Database. 
 #
 #The data is placed in to crimes.json and will contain the following attributes:
-# ID, Crime Category, Date, Offenses(multiple offenses stacked in a crime), latitude, 
-# longitude
+#   ID, Crime Category, Date, Offenses(multiple offenses stacked in a crime), latitude, 
+#   longitude
 #-----------------------------------------------------------------------------------------
 
 #variables
@@ -26,8 +26,13 @@ lng=""
 severity = 0
 #---------------
 
+#----------------------------------------------------------------------------------------
+#Functions
+#----------------------------------------------------------------------------------------
 #The Crime category needs to switched from the index value of crime_cat_list
-#to the actual crime cat value
+#to the actual crime category value
+
+#These functions work as switch statement
 def zero():
     return 0 
 def one():
@@ -44,6 +49,11 @@ options = {0 : zero,
            3 : three,
            4 : four,
 }
+#-----------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------
+#Arrays of crime categories 
+#-----------------------------------------------------------------------------------------
 
 #Category 0 list - uncategorized
 cat0 = ["Identity Theft", "Resisting Arrest","Credit Card Fraud", "Fraud", "False Report", "Evading", "Forgery",
@@ -70,16 +80,19 @@ cat4 = ["Robbery", "Assault", "Dating Violence", "Harassment", "Animal Bite", "I
 #Category8 list - Severe crimes against the person
 cat8 = ["Assault, Aggravated", "Abduction", "Motor Vehicle Crash, Hit and Run"]
 
+#Array of crime categories
 crime_cat_list = [cat0, cat1, cat2,cat4, cat8]
+#--------------------------------------------------------------------------------------------
 
+#The JSON FILE data atributes
 data = {
         '_id':  '',     #The ODU CSV ID - Figured might as well use the this as an ID
         'crimeCat':' ', #Category of the most sever offense 
                         #The crime categories are
                         #{
-                            #0- uncategorized, 
-                            #1- public ofenses, 
-                            #2- crimes against property
+                            #0- Uncategorized, 
+                            #1- Public ofenses, 
+                            #2- Crimes against property
                             #4- Crimes against the person
                             #8- Severe Crimes
                         #}

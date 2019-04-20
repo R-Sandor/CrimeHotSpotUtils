@@ -61,7 +61,6 @@ cat0 = ["Identity Theft", "Resisting Arrest","Credit Card Fraud", "Fraud", "Fals
 "Uniform Notice of Violation", "Assist Other Agency", "Protective Order", "Unauthorized Use of Motor Vehicle", "Lost Property",
 "Served, Warrant", "Alarm"]
 
-
 #Category 1 list - Crimes against the public 
 cat1  = ["Criminal Mischief", "Curfew Violation", "DUI", "Disorderly Conduct", "Disturbance", "Fire Alarm",
 "Liquor Law, Public", "Intoxication", "Liquor Law, Underage", "Minor in Possession - Alcohol",
@@ -105,14 +104,27 @@ data = {
         'lng':' '}      #Longitude
 
 #Open our data CSV
-infile = open('2017Crimemapping.csv', 'r')
+#Ask user which file to open. 
+print('Is this ODU crime data or mock data (O/M)')
+userInput = input()
+while userInput.lower() != 'o' and userInput.lower() != 'm':
+    print('Is this ODU crime data or mock data (O/M)')
+    userInput = input()
+
+if userInput.lower() == 'o':
+    infile = open('2017Crimemapping.csv', 'r')
+    outfile='crimes.json'
+elif userInput.lower() == 'm':
+    infile = open('2017CrimemappingLafayette.csv', 'r')
+    outfile='crimes2.json'
+
 csv_reader = csv.reader(infile, delimiter=',')
 
 #------------------------------------------------
 #This is where the data json objects are created
 #from the csv file
 #------------------------------------------------
-with open('crimes.json', 'w') as outfile:
+with open(outfile, 'w') as outfile:
     
     line_count = 0
     for row in csv_reader:
@@ -176,14 +188,14 @@ with open('crimes.json', 'w') as outfile:
                             max_category = x
                             last_sort_cat = x
                             last_sort_location = 0
-                            x+=1
+                            break
 
                         #If its exactly the same category as the last
                         #insert where the last one was inserted to speed up sorting
                         elif x == last_sort_cat:
 
                             tuple_list.insert(last_sort_location, offense_tuple)
-                            x+=1
+                            break
 
                         #Manually find where it should be stored based on the contents
                         #of list of tuples where the first element of the tuple is cat
@@ -196,8 +208,8 @@ with open('crimes.json', 'w') as outfile:
                             last_sort_cat = offense_tuple[0]
                             last_sort_location = y
                             tuple_list.insert(y, offense_tuple)
-                            x+=1
-                        break
+                            break
+                        
                     #Not found in that category move up a category
                     else:
                         x+=1
@@ -208,6 +220,7 @@ with open('crimes.json', 'w') as outfile:
                     pos = offenses_to_parse.find('|') 
                     #This is used to set the crime category
                     crime_cat = max_category
+
             #--------------------------------------------------------------------
             #This section is used on the last offense a multi-offense crime
             #it is all so used if there is only 1 offense.
